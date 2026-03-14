@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTACT - DUAN LAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #050505; 
+            --accent: #ef4cac; 
+        }
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg); color: #fff; overflow-x: hidden; overflow-y: auto; font-family: 'Inter', sans-serif; 
+        }
+
+        /* 椭圆光晕 */
+        .glow-perimeter { 
+            position: fixed; 
+            top: 0; left: 0; width: 100vw; height: 100vh; 
+            z-index: 1; 
+            pointer-events: none;
+            background: radial-gradient(75% 60% at 50% 50%, transparent 40%, rgba(239, 76, 172, 0.05) 75%, rgba(239, 76, 172, 0.25) 100%);
+            animation: breathe-perimeter 8s ease-in-out infinite alternate; 
+        }
+
+        @keyframes breathe-perimeter { 
+            0% { opacity: 0.5; } 
+            100% { opacity: 1; } 
+        }
+
+        /* 导航栏样式 (PC端) */
+        nav { 
+            position: absolute; top: 40px; width: 100%; display: flex; justify-content: space-between; 
+            align-items: center; 
+            padding: 0 180px; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; 
+            z-index: 20; 
+        }
+        
+        .logo { 
+            font-weight: normal; font-size: 1.2rem; letter-spacing: 1px; 
+            color: inherit; text-decoration: none; transition: color 0.3s ease;
+            z-index: 21;
+        }
+
+        .nav-links { display: flex; gap: 40px; align-items: center; }
+        .nav-links a { 
+            color: rgba(255, 255, 255, 0.6); text-decoration: none; 
+            font-size: 0.9rem; transition: all 0.3s ease; letter-spacing: 0.5px;
+        }
+        .nav-links a:hover, .nav-links a.active { 
+            color: var(--accent); text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); 
+        }
+
+        /* 移动端菜单按钮 (默认隐藏) */
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            z-index: 21;
+        }
+
+        /* CONTACT 页面布局 (PC端) */
+        #contact-container {
+            min-height: 100vh;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 160px 180px 80px 180px; 
+            box-sizing: border-box;
+            z-index: 10; position: relative;
+        }
+
+        .contact-content {
+            width: 100%;
+            max-width: 900px; 
+            display: flex; flex-direction: column; gap: 60px;
+        }
+
+        /* 经历与联系区块通用样式（确保与EXPERIENCE间距一致） */
+        .experience-section {
+            display: flex; flex-direction: column; gap: 24px;
+        }
+
+        /* 标题样式 */
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3056rem; 
+            font-weight: normal; 
+            line-height: 1;
+            margin: 0;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            background: -webkit-linear-gradient(45deg, #ffffff 0%, #888888 100%);
+            background: linear-gradient(45deg, #ffffff 0%, #888888 100%); 
+            -webkit-background-clip: text; 
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
+        }
+
+        /* 列表项布局 */
+        .contact-item {
+            display: flex;
+            align-items: center; /* 垂直居中对齐 */
+            gap: 40px;
+        }
+
+        /* 左侧图标区域 */
+        .contact-label {
+            flex: 0 0 40px; 
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        /* 确保包裹图标的 A 标签样式中性 */
+        .contact-label a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 图标样式设定，按比例缩小为 1.2rem */
+        .contact-label i {
+            font-size: 1.2rem;
+            color: var(--accent);
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+
+        /* 右侧具体的联系信息 */
+        .contact-value-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* 邮箱之间的微小间距 */
+        }
+
+        /* 统一文本格式与 EXPERIENCE 对齐 */
+        .contact-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.765rem; 
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* 悬停文本时的发光闪烁特效 */
+        .contact-value:hover, a.contact-value:hover {
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+
+        /* 悬停文本行时，图标产生联动高亮 */
+        .contact-item:hover .contact-label i {
+            opacity: 1;
+            text-shadow: 0 0 15px var(--accent);
+        }
+
+        /* ----------------------------------- */
+        /* 移动端响应式适配 (手机屏幕)       */
+        /* ----------------------------------- */
+        @media (max-width: 768px) {
+            /* 导航栏移动端样式 */
+            nav {
+                top: 0;
+                padding: 20px;
+                position: fixed;
+                background: rgba(5, 5, 5, 0.95);
+                backdrop-filter: blur(10px);
+            }
+
+            .mobile-menu-btn {
+                display: block; 
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%; 
+                width: 70%;
+                height: 100vh;
+                background: #111;
+                flex-direction: column;
+                justify-content: center;
+                transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+                gap: 30px;
+            }
+
+            .nav-links.active {
+                right: 0; 
+            }
+
+            /* 页面内容移动端样式 */
+            #contact-container {
+                padding: 100px 20px 40px 20px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .contact-item {
+                gap: 20px; /* 缩小图标与文本间的间距 */
+            }
+
+            .contact-label {
+                flex: 0 0 30px; 
+            }
+
+            .contact-value {
+                font-size: 0.75rem; 
+                word-break: break-all; /* 防止长邮箱地址撑破屏幕宽度 */
+            }
+            
+            #audio-module {
+                bottom: 20px !important;
+                right: 20px !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="glow-perimeter"></div>
+    
+    <nav>
+        <a href="index.html" class="logo">DUAN LAB</a>
+        <div class="mobile-menu-btn" id="mobile-menu-toggle">☰</div>
+        <div class="nav-links" id="nav-menu">
+            <a href="work.html">WORK</a>
+            <a href="about.html">ABOUT</a>
+            <a href="experience.html">EXPERIENCE</a>
+            <a href="contact.html" class="active">CONTACT</a>
+        </div>
+    </nav>
+
+    <div id="contact-container">
+        <div class="contact-content">
+            
+            <div class="experience-section">
+                <h2 class="section-title">GET IN TOUCH</h2>
+                
+                <div class="contact-item">
+                    <div class="contact-label">
+                        <a href="mailto:dhh_duan@126.com">
+                            <i class="ri-mail-line"></i>
+                        </a>
+                    </div>
+                    <div class="contact-value-group">
+                        <a href="mailto:dhh_duan@126.com" class="contact-value">dhh_duan@126.com</a>
+                        <a href="mailto:dhhduan@gmail.com" class="contact-value">dhhduan@gmail.com</a>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-label">
+                        <i class="ri-wechat-line"></i>
+                    </div>
+                    <div class="contact-value">taniear-</div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-label">
+                        <a href="https://instagram.com/taniear-" target="_blank">
+                            <i class="ri-instagram-line"></i>
+                        </a>
+                    </div>
+                    <a href="https://instagram.com/taniear-" target="_blank" class="contact-value">@taniear-</a>
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+
+    <div id="audio-module" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+        <i id="music-toggle-icon" class="ri-music-2-line" style="font-size: 1.2rem; color: #ffffff; cursor: pointer; opacity: 0.5; transition: 0.3s;" onclick="toggleBackgroundMusic()"></i>
+    </div>
+
+    <audio id="bg-music-player" loop>
+        <source src="audio/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="click-sound-player" preload="auto">
+        <source src="audio/click.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 移动端菜单切换逻辑
+        const menuToggle = document.getElementById('mobile-menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            if (navMenu.classList.contains('active')) {
+                menuToggle.innerHTML = '✕';
+            } else {
+                menuToggle.innerHTML = '☰';
+            }
+        });
+
+        // 音乐与交互逻辑
+        const bgMusic = document.getElementById('bg-music-player');
+        const clickSound = document.getElementById('click-sound-player');
+        const musicIcon = document.getElementById('music-toggle-icon');
+
+        // 设置背景音乐音量为 0.5 倍
+        bgMusic.volume = 0.5;
+
+        const initMusic = () => {
+            const savedTime = localStorage.getItem('bgMusicTime') || 0;
+            const isPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
+            bgMusic.currentTime = parseFloat(savedTime);
+
+            if (isPlaying) {
+                bgMusic.play().then(() => updateIcon(true)).catch(() => {
+                    document.addEventListener('click', () => {
+                        if (localStorage.getItem('bgMusicPlaying') === 'true') {
+                            bgMusic.play();
+                            updateIcon(true);
+                        }
+                    }, { once: true });
+                });
+            } else {
+                updateIcon(false);
+            }
+        };
+
+        bgMusic.addEventListener('timeupdate', () => {
+            localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+        });
+
+        window.toggleBackgroundMusic = () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                localStorage.setItem('bgMusicPlaying', 'true');
+                updateIcon(true);
+            } else {
+                bgMusic.pause();
+                localStorage.setItem('bgMusicPlaying', 'false');
+                updateIcon(false);
+            }
+        };
+
+        const updateIcon = (playing) => {
+            if (playing) {
+                musicIcon.className = 'ri-music-fill';
+                musicIcon.style.color = '#ef4cac';
+                musicIcon.style.opacity = '1';
+            } else {
+                musicIcon.className = 'ri-music-2-line';
+                musicIcon.style.color = '#ffffff';
+                musicIcon.style.opacity = '0.5';
+            }
+        };
+
+        document.addEventListener('click', (e) => {
+            // 排除手机菜单按钮
+            const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
+            
+            if (target) {
+                clickSound.currentTime = 0;
+                clickSound.volume = 0.8; 
+                clickSound.play().catch(() => {});
+
+                if (target.tagName.toLowerCase() === 'a' && target.href && !target.href.startsWith('javascript:') && target.target !== '_blank') {
+                    e.preventDefault();
+                    setTimeout(() => {
+                        window.location.href = target.href;
+                    }, 150);
+                }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', initMusic);
+    </script>
+</body>
+</html>

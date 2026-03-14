@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Model to JSON Converter</title>
+    <style>
+        body { background: #111; color: #fff; font-family: monospace; padding: 50px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>3D 模型轻量化数据提取工具</h2>
+    <p>正在读取 jellyfish.gltf 并提取点云数据，请稍候...</p>
+    <div id="status" style="color: #ef4cac;">读取中...</div>
+    <button id="downloadBtn" style="display:none;">下载轻量化数据 (jellyfish-points.json)</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        const loader = new THREE.GLTFLoader();
+        let extractedPositions = [];
+        const sampleRate = 0.05; // 提取 5% 的点
+
+        loader.load('jellyfish.gltf', function (gltf) {
+            gltf.scene.traverse(function (child) {
+                if (child.isMesh && child.geometry) {
+                    child.updateWorldMatrix(true, false);
+                    const geometry = child.geometry;
+                    const attribute = geometry.attributes.position;
+                    const matrix = child.matrixWorld;
+                    const vertex = new THREE.Vector3();
+
+                    for (let i = 0; i < attribute.count; i++) {
+                        if (Math.random() < sampleRate) {
+                            vertex.fromBufferAttribute(attribute, i);
+                            vertex.applyMatrix4(matrix); 
+                            // 保留4位小数以极大地缩减 JSON 文件体积
+                            extractedPositions.push(
+                                parseFloat(vertex.x.toFixed(4)), 
+                                parseFloat(vertex.y.toFixed(4)), 
+                                parseFloat(vertex.z.toFixed(4))
+                            );
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('status').innerText = `提取完成！共提取 ${extractedPositions.length / 3} 个坐标点。`;
+            const btn = document.getElementById('downloadBtn');
+            btn.style.display = 'block';
+
+            btn.onclick = function() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(extractedPositions));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href",     dataStr);
+                downloadAnchorNode.setAttribute("download", "jellyfish-points.json");
+                document.body.appendChild(downloadAnchorNode); 
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            };
+        }, undefined, function (error) {
+            document.getElementById('status').innerText = '错误：找不到 jellyfish.gltf，请确保它与此文件在同一目录下。';
+            console.error(error);
+        });
+    </script>
+</body>
+</html>
