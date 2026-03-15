@@ -295,93 +295,123 @@
     </audio>
 
     <script>
-        // 移动端菜单切换逻辑
+        // --------------------------------------------------------
+        // 1. 移动端菜单切换逻辑
+        // --------------------------------------------------------
         const menuToggle = document.getElementById('mobile-menu-toggle');
         const navMenu = document.getElementById('nav-menu');
 
-        menuToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            if (navMenu.classList.contains('active')) {
-                menuToggle.innerHTML = '✕';
-            } else {
-                menuToggle.innerHTML = '☰';
-            }
-        });
+        if(menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                if (navMenu.classList.contains('active')) {
+                    menuToggle.innerHTML = '✕';
+                } else {
+                    menuToggle.innerHTML = '☰';
+                }
+            });
+        }
 
-        // 音乐与交互逻辑
+        // --------------------------------------------------------
+        // 2. 跨页面音频控制与设备判断逻辑
+        // --------------------------------------------------------
+        const isMobileDevice = () => {
+            return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        };
+
         const bgMusic = document.getElementById('bg-music-player');
         const clickSound = document.getElementById('click-sound-player');
         const musicIcon = document.getElementById('music-toggle-icon');
+        const audioModule = document.getElementById('audio-module');
 
-        // 设置背景音乐音量为 0.5 倍
-        bgMusic.volume = 0.5;
+        if (isMobileDevice()) {
+            // 移动端：隐藏控制模块，不绑定播放事件
+            if (audioModule) audioModule.style.display = 'none';
+            window.toggleBackgroundMusic = () => {}; 
+        } else {
+            // 桌面端：初始化并绑定音频系统
+            if(bgMusic) bgMusic.volume = 0.5;
 
-        const initMusic = () => {
-            const savedTime = localStorage.getItem('bgMusicTime') || 0;
-            const isPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
-            bgMusic.currentTime = parseFloat(savedTime);
+            const initMusic = () => {
+                if(!bgMusic) return;
+                const savedTime = localStorage.getItem('bgMusicTime') || 0;
+                const isPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
+                
+                if (savedTime > 0) bgMusic.currentTime = parseFloat(savedTime);
 
-            if (isPlaying) {
-                bgMusic.play().then(() => updateIcon(true)).catch(() => {
-                    document.addEventListener('click', () => {
-                        if (localStorage.getItem('bgMusicPlaying') === 'true') {
-                            bgMusic.play();
-                            updateIcon(true);
-                        }
-                    }, { once: true });
-                });
-            } else {
-                updateIcon(false);
-            }
-        };
-
-        bgMusic.addEventListener('timeupdate', () => {
-            localStorage.setItem('bgMusicTime', bgMusic.currentTime);
-        });
-
-        window.toggleBackgroundMusic = () => {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                localStorage.setItem('bgMusicPlaying', 'true');
-                updateIcon(true);
-            } else {
-                bgMusic.pause();
-                localStorage.setItem('bgMusicPlaying', 'false');
-                updateIcon(false);
-            }
-        };
-
-        const updateIcon = (playing) => {
-            if (playing) {
-                musicIcon.className = 'ri-music-fill';
-                musicIcon.style.color = '#ef4cac';
-                musicIcon.style.opacity = '1';
-            } else {
-                musicIcon.className = 'ri-music-2-line';
-                musicIcon.style.color = '#ffffff';
-                musicIcon.style.opacity = '0.5';
-            }
-        };
-
-        document.addEventListener('click', (e) => {
-            // 排除手机菜单按钮
-            const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
-            
-            if (target) {
-                clickSound.currentTime = 0;
-                clickSound.volume = 0.8; 
-                clickSound.play().catch(() => {});
-
-                if (target.tagName.toLowerCase() === 'a' && target.href && !target.href.startsWith('javascript:') && target.target !== '_blank') {
-                    e.preventDefault();
-                    setTimeout(() => {
-                        window.location.href = target.href;
-                    }, 150);
+                if (isPlaying) {
+                    bgMusic.play().then(() => {
+                        updateIcon(true);
+                    }).catch(() => {
+                        updateIcon(false);
+                        document.addEventListener('click', () => {
+                            if (localStorage.getItem('bgMusicPlaying') === 'true') {
+                                bgMusic.play();
+                                updateIcon(true);
+                            }
+                        }, { once: true });
+                    });
+                } else {
+                    updateIcon(false);
                 }
-            }
-        });
+            };
 
-        window.addEventListener('DOMContentLoaded', initMusic);
+            setInterval(() => {
+                if (bgMusic && !bgMusic.paused) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                }
+            }, 500);
+
+            window.toggleBackgroundMusic = () => {
+                if (!bgMusic) return;
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    localStorage.setItem('bgMusicPlaying', 'true');
+                    updateIcon(true);
+                } else {
+                    bgMusic.pause();
+                    localStorage.setItem('bgMusicPlaying', 'false');
+                    updateIcon(false);
+                }
+            };
+
+            const updateIcon = (playing) => {
+                if(!musicIcon) return;
+                if (playing) {
+                    musicIcon.className = 'ri-music-fill';
+                    musicIcon.style.color = '#ef4cac';
+                    musicIcon.style.opacity = '1';
+                } else {
+                    musicIcon.className = 'ri-music-2-line';
+                    musicIcon.style.color = '#ffffff';
+                    musicIcon.style.opacity = '0.5';
+                }
+            };
+
+            document.addEventListener('click', (e) => {
+                const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
+                
+                if (target) {
+                    if(clickSound) {
+                        clickSound.currentTime = 0;
+                        clickSound.volume = 0.8; 
+                        clickSound.play().catch(() => {});
+                    }
+
+                    if (target.tagName.toLowerCase() === 'a' && target.href && !target.href.startsWith('javascript:') && target.target !== '_blank') {
+                        e.preventDefault();
+                        if (bgMusic && !bgMusic.paused) {
+                            localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                        }
+                        setTimeout(() => {
+                            window.location.href = target.href;
+                        }, 150);
+                    }
+                }
+            });
+
+            window.addEventListener('DOMContentLoaded', initMusic);
+        }
     </script>
 </body>
 </html>

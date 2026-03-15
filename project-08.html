@@ -139,7 +139,7 @@
 
             main { padding: 100px 20px 0; }
 
-            /* 取消封面图浮动 */
+            /* 取消图片浮动，改为上下布局 */
             .cover-image {
                 float: none;
                 width: 100%;
@@ -149,7 +149,7 @@
             .project-title { font-size: 1.1rem; }
             .project-meta { font-size: 0.65rem; }
 
-            /* 画廊改为单列网格 */
+            /* 画廊改为单列排版 */
             .gallery-section {
                 grid-template-columns: 1fr;
                 gap: 20px;
@@ -158,13 +158,14 @@
             footer { padding: 20px 0 60px 0; }
             .footer-link { font-size: 0.7rem; }
 
-            /* 灯箱移动端优化 */
-            #lightbox img { max-width: 95%; max-height: 80%; }
+            /* 灯箱移动端优化 - 启用指针事件支持滑动 */
+            #lightbox img { max-width: 95%; max-height: 80%; pointer-events: auto; }
             .lightbox-btn { font-size: 1.8rem; padding: 10px; }
             .btn-prev { left: 10px; }
             .btn-next { right: 10px; }
             .btn-close { top: 20px; right: 20px; font-size: 1.5rem; }
 
+            /* 音频按钮位置微调 */
             #audio-module {
                 bottom: 20px !important;
                 right: 20px !important;
@@ -180,7 +181,7 @@
         <a href="index.html" class="logo">DUAN LAB</a>
         <div class="mobile-menu-btn" id="mobile-menu-toggle">☰</div>
         <div class="nav-links" id="nav-menu">
-            <a href="work.html">WORK</a>
+            <a href="work.html" class="active">WORK</a>
             <a href="about.html">ABOUT</a>
             <a href="experience.html">EXPERIENCE</a>
             <a href="contact.html">CONTACT</a>
@@ -288,6 +289,31 @@
                 if (e.key === 'Escape') closeLightbox();
             }
         });
+
+        // --------------------------------------------------------
+        // 移动端灯箱滑动 (Swipe) 翻页逻辑
+        // --------------------------------------------------------
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const lightboxElement = document.getElementById('lightbox');
+
+        lightboxElement.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        lightboxElement.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50; 
+            if (touchStartX - touchEndX > swipeThreshold) {
+                nextImage(); // 向左滑动，查看下一张
+            } else if (touchEndX - touchStartX > swipeThreshold) {
+                prevImage(); // 向右滑动，查看上一张
+            }
+        }
     </script>
 
     <div id="audio-module" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
@@ -303,76 +329,107 @@
     </audio>
 
     <script>
+        const isMobileDevice = () => {
+            return window.innerWidth <= 768 || 
+                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+        };
+
         const bgMusic = document.getElementById('bg-music-player');
         const clickSound = document.getElementById('click-sound-player');
         const musicIcon = document.getElementById('music-toggle-icon');
+        const audioModule = document.getElementById('audio-module');
 
-        bgMusic.volume = 0.5;
+        if (isMobileDevice()) {
+            // 移动端彻底移出音频控制节点
+            if (audioModule) audioModule.remove();
+            if (bgMusic) bgMusic.remove();
+            if (clickSound) clickSound.remove();
+            window.toggleBackgroundMusic = () => {}; 
+        } else {
+            // 桌面端启用音频同步
+            if(bgMusic) bgMusic.volume = 0.5;
 
-        const initMusic = () => {
-            const savedTime = localStorage.getItem('bgMusicTime') || 0;
-            const isPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
-            bgMusic.currentTime = parseFloat(savedTime);
+            const initMusic = () => {
+                if(!bgMusic) return;
+                const savedTime = localStorage.getItem('bgMusicTime') || 0;
+                const isPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
+                
+                if (savedTime > 0) bgMusic.currentTime = parseFloat(savedTime);
 
-            if (isPlaying) {
-                bgMusic.play().then(() => updateIcon(true)).catch(() => {
-                    document.addEventListener('click', () => {
-                        if (localStorage.getItem('bgMusicPlaying') === 'true') {
-                            bgMusic.play();
-                            updateIcon(true);
-                        }
-                    }, { once: true });
-                });
-            } else {
-                updateIcon(false);
-            }
-        };
-
-        bgMusic.addEventListener('timeupdate', () => {
-            localStorage.setItem('bgMusicTime', bgMusic.currentTime);
-        });
-
-        window.toggleBackgroundMusic = () => {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                localStorage.setItem('bgMusicPlaying', 'true');
-                updateIcon(true);
-            } else {
-                bgMusic.pause();
-                localStorage.setItem('bgMusicPlaying', 'false');
-                updateIcon(false);
-            }
-        };
-
-        const updateIcon = (playing) => {
-            if (playing) {
-                musicIcon.className = 'ri-music-fill';
-                musicIcon.style.color = '#ef4cac';
-                musicIcon.style.opacity = '1';
-            } else {
-                musicIcon.className = 'ri-music-2-line';
-                musicIcon.style.color = '#ffffff';
-                musicIcon.style.opacity = '0.5';
-            }
-        };
-
-        document.addEventListener('click', (e) => {
-            const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
-            if (target) {
-                clickSound.currentTime = 0;
-                clickSound.volume = 0.8;
-                clickSound.play().catch(() => {});
-
-                if (target.tagName.toLowerCase() === 'a' && target.href && !target.href.startsWith('javascript:') && target.target !== '_blank') {
-                    e.preventDefault();
-                    setTimeout(() => {
-                        window.location.href = target.href;
-                    }, 150);
+                if (isPlaying) {
+                    bgMusic.play().then(() => {
+                        updateIcon(true);
+                    }).catch(() => {
+                        updateIcon(false);
+                        document.addEventListener('click', () => {
+                            if (localStorage.getItem('bgMusicPlaying') === 'true') {
+                                bgMusic.play();
+                                updateIcon(true);
+                            }
+                        }, { once: true });
+                    });
+                } else {
+                    updateIcon(false);
                 }
-            }
-        });
+            };
 
-        window.addEventListener('DOMContentLoaded', initMusic);
+            setInterval(() => {
+                if (bgMusic && !bgMusic.paused) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                }
+            }, 500);
+
+            window.toggleBackgroundMusic = () => {
+                if (!bgMusic) return;
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    localStorage.setItem('bgMusicPlaying', 'true');
+                    updateIcon(true);
+                } else {
+                    bgMusic.pause();
+                    localStorage.setItem('bgMusicPlaying', 'false');
+                    updateIcon(false);
+                }
+            };
+
+            const updateIcon = (playing) => {
+                if(!musicIcon) return;
+                if (playing) {
+                    musicIcon.className = 'ri-music-fill';
+                    musicIcon.style.color = '#ef4cac';
+                    musicIcon.style.opacity = '1';
+                } else {
+                    musicIcon.className = 'ri-music-2-line';
+                    musicIcon.style.color = '#ffffff';
+                    musicIcon.style.opacity = '0.5';
+                }
+            };
+
+            document.addEventListener('click', (e) => {
+                const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
+                
+                if (target) {
+                    if(clickSound) {
+                        clickSound.currentTime = 0;
+                        clickSound.volume = 0.8; 
+                        clickSound.play().catch(() => {});
+                    }
+
+                    if (target.tagName.toLowerCase() === 'a' && target.href && !target.href.startsWith('javascript:') && target.target !== '_blank') {
+                        e.preventDefault();
+                        if (bgMusic && !bgMusic.paused) {
+                            localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                        }
+                        setTimeout(() => {
+                            window.location.href = target.href;
+                        }, 150);
+                    }
+                }
+            });
+
+            window.addEventListener('DOMContentLoaded', initMusic);
+        }
     </script>
 </body>
 </html>
