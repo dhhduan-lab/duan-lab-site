@@ -7,64 +7,64 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
-        :root { 
-            --bg: #050505; 
-            --accent: #ef4cac; 
-        }
-        
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--bg); color: #fff; overflow: hidden; font-family: 'Inter', sans-serif; 
+        :root {
+            --bg: #050505;
+            --accent: #ef4cac;
         }
 
-        .glow-perimeter { 
-            position: fixed; 
-            top: 0; left: 0; width: 100vw; height: 100vh; 
-            z-index: 1; 
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg); color: #fff; overflow: hidden; font-family: 'Inter', sans-serif;
+        }
+
+        .glow-perimeter {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
             pointer-events: none;
             background: radial-gradient(ellipse at center, transparent 10%, rgba(239, 76, 172, 0.02) 75%, rgba(239, 76, 172, 0.09) 100%);
             box-shadow: inset 0 0 150px rgba(239, 76, 172, 0.25);
-            animation: breathe-perimeter 8s ease-in-out infinite alternate; 
+            animation: breathe-perimeter 8s ease-in-out infinite alternate;
         }
 
-        @keyframes breathe-perimeter { 
-            0% { opacity: 0.5; } 
-            100% { opacity: 1; } 
+        @keyframes breathe-perimeter {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
-        #canvas-container { 
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; 
+        #canvas-container {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 5; pointer-events: auto;
-            opacity: 0; 
+            opacity: 0;
             transition: opacity 1.5s ease-in-out;
         }
 
-        #app { 
-            display: flex; height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; 
-            z-index: 10; align-items: center; pointer-events: none; 
+        #app {
+            display: flex; height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
+            z-index: 10; align-items: center; pointer-events: none;
         }
-        
+
         #left { flex: 1; padding-left: 180px; position: relative; z-index: 15; }
-        
-        h1 { 
+
+        h1 {
             font-family: 'Franklin Gothic Demi', 'Franklin Gothic', 'Inter', sans-serif;
-            font-size: 6rem; 
-            font-weight: normal; 
-            line-height: 1.1; 
-            margin: 0; 
+            font-size: 6rem;
+            font-weight: normal;
+            line-height: 1.1;
+            margin: 0;
             background: -webkit-linear-gradient(45deg, #ffffff 0%, #888888 100%);
-            background: linear-gradient(45deg, #ffffff 0%, #888888 100%); 
-            -webkit-background-clip: text; 
+            background: linear-gradient(45deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             color: transparent;
             filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); 
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
             pointer-events: auto; cursor: default;
         }
 
-        h1:hover { 
-            filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(239, 76, 172, 0.4)); 
+        h1:hover {
+            filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(239, 76, 172, 0.4));
             transform: translateY(-2px);
         }
 
@@ -73,35 +73,35 @@
         .highlight:hover {
             background: -webkit-linear-gradient(135deg, var(--accent) 0%, #ff8ade 100%);
             background: linear-gradient(135deg, var(--accent) 0%, #ff8ade 100%);
-            -webkit-background-clip: text; 
+            -webkit-background-clip: text;
             background-clip: text;
-            -webkit-text-fill-color: transparent; 
+            -webkit-text-fill-color: transparent;
             color: transparent;
             filter: drop-shadow(0 0 20px var(--accent)) drop-shadow(0 0 40px rgba(239, 76, 172, 0.6));
             transform: scale(1.02) translateX(5px);
         }
 
-        nav { 
-            position: absolute; top: 40px; width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; 
-            padding: 0 180px; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; 
+        nav {
+            position: absolute; top: 40px; width: 100%; display: flex; justify-content: space-between;
+            align-items: center;
+            padding: 0 180px; box-sizing: border-box; font-family: 'JetBrains Mono', monospace;
             z-index: 20; pointer-events: none;
         }
-        
-        .logo { 
+
+        .logo {
             font-family: 'JetBrains Mono', monospace;
-            font-weight: normal; font-size: 1.2rem; letter-spacing: 1px; pointer-events: auto; 
+            font-weight: normal; font-size: 1.2rem; letter-spacing: 1px; pointer-events: auto;
             color: inherit; text-decoration: none; cursor: pointer;
         }
 
         .nav-links { display: flex; gap: 40px; pointer-events: auto; align-items: center; }
-        .nav-links a { 
-            color: rgba(255, 255, 255, 0.6); text-decoration: none; 
-            font-size: 0.9rem; 
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.6); text-decoration: none;
+            font-size: 0.9rem;
             transition: all 0.3s ease !important; letter-spacing: 0.5px;
         }
         .nav-links a:hover { color: var(--accent) !important; text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); }
-        
+
         .status-msg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; letter-spacing: 2px;
@@ -111,6 +111,7 @@
         #loading-msg { color: var(--accent); text-shadow: 0 0 10px rgba(239, 76, 172, 0.5); }
         #error-msg { color: #ff4444; display: none; }
 
+        /* 移动端响应式适配 */
         @media (max-width: 768px) {
             nav {
                 transform: scale(0.8);
@@ -121,24 +122,17 @@
                 gap: 20px;
                 align-items: flex-start;
             }
-            .logo {
-                font-size: 2.2rem;
-            }
-            .nav-links {
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-            .nav-links a {
-                font-size: 1.6rem;
-            }
+            .logo { font-size: 2.2rem; }
+            .nav-links { gap: 20px; flex-wrap: wrap; }
+            .nav-links a { font-size: 1.6rem; }
 
             #canvas-container {
-                position: fixed; 
+                position: fixed;
                 top: 0;
                 left: 0;
-                width: 100vw; 
-                height: 100vh; 
-                z-index: 5; 
+                width: 100vw;
+                height: 100vh;
+                z-index: 5;
             }
 
             #left {
@@ -150,9 +144,7 @@
                 align-items: center;
                 justify-content: center;
             }
-            h1 {
-                font-size: 4rem;
-            }
+            h1 { font-size: 4rem; }
         }
     </style>
 </head>
@@ -160,7 +152,7 @@
 
     <div class="glow-perimeter"></div>
     <div id="canvas-container"></div>
-    
+
     <nav>
         <a href="index.html" class="logo">DUAN LAB</a>
         <div class="nav-links">
@@ -185,46 +177,30 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <div id="audio-module" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
-        <i id="music-toggle-icon" class="ri-music-2-line" style="font-size: 1.2rem; color: #ffffff; cursor: pointer; opacity: 0.5; transition: 0.3s;" onclick="toggleBackgroundMusic()"></i>
-    </div>
-
-    <audio id="bg-music-player" loop preload="auto">
-        <source src="audio/music.mp3" type="audio/mpeg">
-    </audio>
-
-    <audio id="click-sound-player" preload="auto">
-        <source src="audio/click.mp3" type="audio/mpeg">
-    </audio>
-
     <script>
-        // 检测移动端设备
-        const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
         const container = document.getElementById('canvas-container');
         const errorMsg = document.getElementById('error-msg');
         const loadingMsg = document.getElementById('loading-msg');
-        
+
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        
+
         renderer.setSize(window.innerWidth, window.innerHeight);
-        // 移动端降低像素比限制以提升性能
-        renderer.setPixelRatio(isMobileDevice ? 1 : Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        const outerGroup = new THREE.Group(); 
-        const innerGroup = new THREE.Group(); 
+        const outerGroup = new THREE.Group();
+        const innerGroup = new THREE.Group();
         outerGroup.add(innerGroup);
         scene.add(outerGroup);
 
         let clock = new THREE.Clock();
         let jellyfishGeometry;
-        
+
         let basePositions = [];
         let velocities = [];
-        
+
         const mouse = new THREE.Vector2(-9999, -9999);
         const raycaster = new THREE.Raycaster();
         const interactionPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -232,12 +208,12 @@
 
         let currentDynamicScale = 1.0;
 
-        const particleMaterial = new THREE.PointsMaterial({ 
+        const particleMaterial = new THREE.PointsMaterial({
             size: 0.003,            
             color: 0xef4cac,        
-            transparent: true, 
+            transparent: true,
             opacity: 0.6,            
-            blending: THREE.NormalBlending, 
+            blending: THREE.NormalBlending,
             depthWrite: false        
         });
 
@@ -260,14 +236,14 @@
                 const boundingBox = jellyfishGeometry.boundingBox;
                 const center = new THREE.Vector3();
                 boundingBox.getCenter(center);
-                
+
                 jellyfishGeometry.translate(-center.x, -boundingBox.max.y, -center.z);
 
                 const size = new THREE.Vector3();
                 boundingBox.getSize(size);
                 const maxDim = Math.max(size.x, size.y, size.z);
-                
-                const targetSize = 5.5; 
+
+                const targetSize = 5.5;
                 jellyfishGeometry.scale(targetSize / maxDim, targetSize / maxDim, targetSize / maxDim);
 
                 const updatedPositions = jellyfishGeometry.attributes.position.array;
@@ -277,13 +253,13 @@
                 const jellyfishPoints = new THREE.Points(jellyfishGeometry, particleMaterial);
                 innerGroup.add(jellyfishPoints);
 
-                if (isMobileDevice) {
-                    outerGroup.rotation.set(0, 0, 0); 
-                    outerGroup.position.set(0, 2.5, 0); 
-                    camera.position.z = 8.5; 
+                if (window.innerWidth <= 768) {
+                    outerGroup.rotation.set(0, 0, 0);
+                    outerGroup.position.set(0, 2.5, 0);
+                    camera.position.z = 8.5;
                 } else {
-                    outerGroup.rotation.set(0, 0, -45 * (Math.PI / 180)); 
-                    outerGroup.position.set(3.2, 1.4, 0); 
+                    outerGroup.rotation.set(0, 0, -45 * (Math.PI / 180));
+                    outerGroup.position.set(3.2, 1.4, 0);
                     camera.position.z = 6.0;
                 }
 
@@ -295,7 +271,7 @@
             .catch(error => {
                 console.error('环境错误:', error);
                 loadingMsg.style.display = 'none';
-                errorMsg.style.display = 'block'; 
+                errorMsg.style.display = 'block';
             });
 
         function updateMousePosition(clientX, clientY) {
@@ -303,9 +279,9 @@
             mouse.y = -(clientY / window.innerHeight) * 2 + 1;
         }
 
-        if (!isMobileDevice) {
-            window.addEventListener('mousemove', (e) => updateMousePosition(e.clientX, e.clientY));
-        }
+        window.addEventListener('mousemove', (e) => updateMousePosition(e.clientX, e.clientY));
+        window.addEventListener('touchstart', (e) => updateMousePosition(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+        window.addEventListener('touchmove', (e) => updateMousePosition(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
 
         function animate() {
             requestAnimationFrame(animate);
@@ -314,48 +290,46 @@
             const time = clock.getElapsedTime();
             innerGroup.rotation.y += 0.002;
 
-            let targetDynamicScale = 1.31; 
-            if (mouse.y !== -9999 && !isMobileDevice) targetDynamicScale = 1.31 + mouse.y * 0.3; 
-            
+            let targetDynamicScale = 1.31;
+            if (mouse.y !== -9999) targetDynamicScale = 1.31 + mouse.y * 0.3;
+
             currentDynamicScale += (targetDynamicScale - currentDynamicScale) * 0.05;
+
             const s = currentDynamicScale + Math.sin(time * 1.5) * 0.02;
             innerGroup.scale.set(s, s, s);
 
-            // 在移动端剥离复杂的顶点排斥计算以保证性能
-            if (!isMobileDevice) {
-                raycaster.setFromCamera(mouse, camera);
-                raycaster.ray.intersectPlane(interactionPlane, mouse3D);
-                innerGroup.worldToLocal(mouse3D); 
+            raycaster.setFromCamera(mouse, camera);
+            raycaster.ray.intersectPlane(interactionPlane, mouse3D);
+            innerGroup.worldToLocal(mouse3D);
 
-                const posAttr = jellyfishGeometry.attributes.position;
-                const positions = posAttr.array;
+            const posAttr = jellyfishGeometry.attributes.position;
+            const positions = posAttr.array;
 
-                for (let i = 0; i < posAttr.count; i++) {
-                    const idx = i * 3;
-                    let px = positions[idx]; let py = positions[idx + 1]; let pz = positions[idx + 2];
-                    const bx = basePositions[idx]; const by = basePositions[idx + 1]; const bz = basePositions[idx + 2];
-                    let vx = velocities[idx]; let vy = velocities[idx + 1]; let vz = velocities[idx + 2];
+            for (let i = 0; i < posAttr.count; i++) {
+                const idx = i * 3;
+                let px = positions[idx]; let py = positions[idx + 1]; let pz = positions[idx + 2];
+                const bx = basePositions[idx]; const by = basePositions[idx + 1]; const bz = basePositions[idx + 2];
+                let vx = velocities[idx]; let vy = velocities[idx + 1]; let vz = velocities[idx + 2];
 
-                    const dx = mouse3D.x - px; const dy = mouse3D.y - py; const dz = mouse3D.z - pz;
-                    const distSq = dx * dx + dy * dy + dz * dz;
+                const dx = mouse3D.x - px; const dy = mouse3D.y - py; const dz = mouse3D.z - pz;
+                const distSq = dx * dx + dy * dy + dz * dz;
 
-                    if (distSq < 0.64 && distSq > 0) {
-                        const dist = Math.sqrt(distSq);
-                        const force = (0.8 - dist) / 0.8;
-                        vx -= (dx / dist) * force * 0.06;
-                        vy -= (dy / dist) * force * 0.06;
-                        vz -= (dz / dist) * force * 0.06;
-                    }
-
-                    vx += (bx - px) * 0.05; vy += (by - py) * 0.05; vz += (bz - pz) * 0.05;
-                    vx *= 0.82; vy *= 0.82; vz *= 0.82;
-
-                    velocities[idx] = vx; velocities[idx+1] = vy; velocities[idx+2] = vz;
-                    positions[idx] = px + vx; positions[idx+1] = py + vy; positions[idx+2] = pz + vz;
+                if (distSq < 0.64 && distSq > 0) {
+                    const dist = Math.sqrt(distSq);
+                    const force = (0.8 - dist) / 0.8;
+                    vx -= (dx / dist) * force * 0.06;
+                    vy -= (dy / dist) * force * 0.06;
+                    vz -= (dz / dist) * force * 0.06;
                 }
-                posAttr.needsUpdate = true;
+
+                vx += (bx - px) * 0.05; vy += (by - py) * 0.05; vz += (bz - pz) * 0.05;
+                vx *= 0.82; vy *= 0.82; vz *= 0.82;
+
+                velocities[idx] = vx; velocities[idx+1] = vy; velocities[idx+2] = vz;
+                positions[idx] = px + vx; positions[idx+1] = py + vy; positions[idx+2] = pz + vz;
             }
-            
+
+            posAttr.needsUpdate = true;
             renderer.render(scene, camera);
         }
 
@@ -374,27 +348,52 @@
                 camera.position.z = 6.0;
             }
         });
+    </script>
 
-        // 音频模块控制逻辑
+    <div id="audio-module" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999;">
+        <i id="music-toggle-icon" class="ri-music-2-line" style="font-size: 1.2rem; color: #ffffff; cursor: pointer; opacity: 0.5; transition: 0.3s;" onclick="toggleBackgroundMusic()"></i>
+    </div>
+
+    <audio id="bg-music-player" loop>
+        <source src="audio/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="click-sound-player" preload="auto">
+        <source src="audio/click.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 检测当前设备是否为移动端
+        const isMobileDevice = () => {
+            return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        };
+
         const bgMusic = document.getElementById('bg-music-player');
         const clickSound = document.getElementById('click-sound-player');
         const musicIcon = document.getElementById('music-toggle-icon');
         const audioModule = document.getElementById('audio-module');
 
-        if (isMobileDevice) {
+        // 根据设备执行不同逻辑
+        if (isMobileDevice()) {
+            // 移动端：移除音频控件，完全禁用相关交互逻辑
             if (audioModule) audioModule.style.display = 'none';
-            window.toggleBackgroundMusic = () => {}; 
+            window.toggleBackgroundMusic = () => {};
         } else {
+            // 桌面端：执行音频播放逻辑
             bgMusic.volume = 0.5;
 
             const initMusic = () => {
                 const savedTime = localStorage.getItem('bgMusicTime') || 0;
                 const isPlaying = localStorage.getItem('bgMusicPlaying') === 'true';
-                
-                if (savedTime > 0) bgMusic.currentTime = parseFloat(savedTime);
+
+                if (savedTime > 0) {
+                    bgMusic.currentTime = parseFloat(savedTime);
+                }
 
                 if (isPlaying) {
-                    bgMusic.play().then(() => updateIcon(true)).catch(() => {
+                    bgMusic.play().then(() => {
+                        updateIcon(true);
+                    }).catch(() => {
                         updateIcon(false);
                         document.addEventListener('click', () => {
                             if (localStorage.getItem('bgMusicPlaying') === 'true') {
@@ -408,8 +407,11 @@
                 }
             };
 
+            // 每 500ms 同步一次时间，防止页面突然卸载导致数据丢失
             setInterval(() => {
-                if (!bgMusic.paused) localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                if (!bgMusic.paused) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                }
             }, 500);
 
             window.toggleBackgroundMusic = () => {
@@ -438,15 +440,24 @@
 
             document.addEventListener('click', (e) => {
                 const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
+
                 if (target) {
+                    // 仅桌面端播放点击音效
                     clickSound.currentTime = 0;
                     clickSound.volume = 0.8;
                     clickSound.play().catch(() => {});
 
                     if (target.tagName.toLowerCase() === 'a' && target.href && !target.href.startsWith('javascript:') && target.target !== '_blank') {
                         e.preventDefault();
-                        if (!bgMusic.paused) localStorage.setItem('bgMusicTime', bgMusic.currentTime);
-                        setTimeout(() => { window.location.href = target.href; }, 150);
+
+                        // 跳转前强制保存最后时间点
+                        if (!bgMusic.paused) {
+                            localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                        }
+
+                        setTimeout(() => {
+                            window.location.href = target.href;
+                        }, 150);
                     }
                 }
             });
