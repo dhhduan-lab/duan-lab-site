@@ -145,7 +145,6 @@
         /* 移动端响应式适配 (手机屏幕)       */
         /* ----------------------------------- */
         @media (max-width: 768px) {
-            /* 导航栏移动端样式 */
             nav {
                 top: 0;
                 padding: 20px;
@@ -155,13 +154,13 @@
             }
 
             .mobile-menu-btn {
-                display: block; /* 在手机端显示汉堡菜单按钮 */
+                display: block; 
             }
 
             .nav-links {
                 position: fixed;
                 top: 0;
-                right: -100%; /* 默认隐藏在右侧屏幕外 */
+                right: -100%; 
                 width: 70%;
                 height: 100vh;
                 background: #111;
@@ -173,22 +172,21 @@
             }
 
             .nav-links.active {
-                right: 0; /* 激活时滑入屏幕 */
+                right: 0; 
             }
 
-            /* 页面内容移动端样式 */
             #about-container {
-                padding: 100px 20px 40px 20px; /* 减小四周内边距，顶部留出导航栏空间 */
+                padding: 100px 20px 40px 20px; 
             }
 
             .about-content {
-                flex-direction: column; /* 垂直排列 */
+                flex-direction: column; 
                 gap: 40px;
             }
 
             .photo-column {
                 width: 100%;
-                max-width: 320px; /* 控制图片在手机端的最大宽度 */
+                max-width: 320px; 
                 margin: 0 auto;
             }
 
@@ -205,10 +203,9 @@
             }
 
             .text-column p {
-                font-size: 0.75rem; /* 稍微放大手机端正文以便阅读 */
+                font-size: 0.75rem; 
             }
             
-            /* 音频按钮位置微调 */
             #audio-module {
                 bottom: 20px !important;
                 right: 20px !important;
@@ -234,7 +231,7 @@
     <div id="about-container">
         <div class="about-content">
             <div class="photo-column">
-                <img src="images/profile.png" alt="Huanhuan Duan Portrait">
+                <img src="images/profile.webp" alt="Huanhuan Duan Portrait">
             </div>
             
             <div class="text-column">
@@ -288,10 +285,12 @@
         }
 
         // --------------------------------------------------------
-        // 2. 跨页面音频控制与设备判断逻辑
+        // 2. 严谨的音频隔离与跨页面同步脚本
         // --------------------------------------------------------
         const isMobileDevice = () => {
-            return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            return window.innerWidth <= 768 || 
+                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
         };
 
         const bgMusic = document.getElementById('bg-music-player');
@@ -300,11 +299,13 @@
         const audioModule = document.getElementById('audio-module');
 
         if (isMobileDevice()) {
-            // 移动端：隐藏控制模块，不绑定播放事件
-            if (audioModule) audioModule.style.display = 'none';
+            // 移动端彻底移除音频节点及交互绑定
+            if (audioModule) audioModule.remove();
+            if (bgMusic) bgMusic.remove();
+            if (clickSound) clickSound.remove();
             window.toggleBackgroundMusic = () => {}; 
         } else {
-            // 桌面端：初始化并绑定音频系统
+            // 桌面端初始化音频系统
             if(bgMusic) bgMusic.volume = 0.5;
 
             const initMusic = () => {
@@ -364,7 +365,7 @@
             };
 
             document.addEventListener('click', (e) => {
-                const target = e.target.closest('a, .gallery-trigger, .lightbox-btn, #music-toggle-icon');
+                const target = e.target.closest('a, #music-toggle-icon');
                 
                 if (target) {
                     if(clickSound) {
